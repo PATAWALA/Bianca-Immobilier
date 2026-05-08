@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { MapPin, Bed, Maximize } from 'lucide-react'
 
 interface PropertyCardProps {
-  id: number
+  id: string,
   title: string
   type: string
   price: string
