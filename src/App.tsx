@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Search from './pages/Search'
 import Footer from './components/Footer'
+import ScrollToTop from './components/ScrollToTop';
 import ServicePage from './pages/ServicePage'
 import Contact from './pages/Contact'
 
@@ -10,6 +11,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Navbar />
+      <ScrollToTop/>
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
