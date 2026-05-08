@@ -1,12 +1,5 @@
 import { Link } from 'react-router-dom'
-import {  Phone, Mail, MapPin } from 'lucide-react'
-
-const serviceLinks = [
-  { label: 'Décoration d’intérieur', href: '/services/decoration' },
-  { label: 'Construction', href: '/services/construction' },
-  { label: 'Gestion de biens', href: '/services/gestion' },
-  { label: 'Aménagement', href: '/services/amenagement' },
-]
+import { Phone, Mail, MapPin } from 'lucide-react'
 
 const navLinks = [
   { label: 'Accueil', href: '/' },
@@ -14,6 +7,7 @@ const navLinks = [
   { label: 'À vendre', href: '/vendre?transaction=vente' },
   { label: 'Villa', href: '/recherche?type=villa' },
   { label: 'Parcelle', href: '/recherche?type=parcelle' },
+  { label: 'Nos Services', href: '/services' },
   { label: 'Nous Contacter', href: '/contact' },
 ]
 
@@ -32,11 +26,11 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Nos Services */}
+          {/* Liens rapides */}
           <div>
-            <h4 className="font-semibold text-gold mb-4">Nos Services</h4>
+            <h4 className="font-semibold text-gold mb-4">Liens utiles</h4>
             <ul className="space-y-2">
-              {serviceLinks.map((link) => (
+              {navLinks.map((link) => (
                 <li key={link.href}>
                   <Link to={link.href} className="text-gray-400 hover:text-gold text-sm transition-colors">
                     {link.label}
@@ -46,19 +40,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Liens rapides + Contact */}
+          {/* Contact */}
           <div>
-            <h4 className="font-semibold text-gold mb-4">Liens utiles</h4>
-            <ul className="space-y-2 mb-6">
-              {navLinks.map((link) => (
-                <li key={link.href}>
-                  <Link to={link.href} className="text-gray-400 hover:text-gold text-sm transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-
             <h4 className="font-semibold text-gold mb-4">Contact</h4>
             <ul className="space-y-3 text-sm text-gray-400">
               <li className="flex items-center gap-2">
@@ -74,7 +57,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Séparateur + Copyright */}
         <div className="mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
           <p>&copy; {new Date().getFullYear()} Bianca Immobilier. Tous droits réservés.</p>
         </div>
