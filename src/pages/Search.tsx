@@ -13,10 +13,10 @@ interface Property {
   surface?: number
   rooms?: number
   city: string
-  image: string // temporairement en dur, ensuite on utilisera images[0]
+  image: string
 }
 
-// Données mockées pour tester (à supprimer une fois Supabase branchée)
+// Données mockées (tu pourras les supprimer quand Supabase sera branché)
 const MOCK_PROPERTIES: Property[] = [
   {
     id: 1, title: 'Villa moderne Cocody', type: 'villa', transaction_type: 'vente', price: 450000, surface: 280, rooms: 5, city: 'Abidjan', image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
@@ -33,28 +33,41 @@ const MOCK_PROPERTIES: Property[] = [
 ]
 
 export default function Search() {
-  const [searchParams] = useSearchParams()
-  const typeParam = searchParams.get('type') || ''
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [properties, setProperties] = useState<Property[]>([])
+  const [loading, setLoading] = useState(false)
+
+  // État des filtres, initialisé depuis l'URL
   const [filters, setFilters] = useState({
     transaction: searchParams.get('transaction') || '',
-    type: typeParam,
+    type: searchParams.get('type') || '',
     city: '',
     minPrice: '',
     maxPrice: '',
     minSurface: '',
   })
-  const [properties, setProperties] = useState<Property[]>([])
-  const [loading, setLoading] = useState(false)
 
-  // Appel à Supabase (ou mock pour l’instant)
+  // 🔁 Synchronise les filtres à chaque changement d'URL (ex: clic sur Villa/Parcelle)
   useEffect(() => {
-    fetchProperties()
+    const transaction = searchParams.get('transaction') || ''
+    const type = searchParams.get('type') || ''
+    setFilters(prev => ({
+      ...prev,
+      transaction,
+      type,
+    }))
+  }, [searchParams])
+
+  // ⚡ Recharge les biens dès que les filtres changent
+  useEffect(() => {
+    fetchFilteredProperties()
   }, [filters])
 
-  const fetchProperties = async () => {
+  const fetchFilteredProperties = async () => {
     setLoading(true)
-    // Pour l'instant, on filtre les données mockées (simule la future requête Supabase)
+    // Simulation de filtrage des données mockées
     let filtered = [...MOCK_PROPERTIES]
+
     if (filters.transaction) {
       filtered = filtered.filter(p => p.transaction_type === filters.transaction)
     }
@@ -73,26 +86,42 @@ export default function Search() {
     if (filters.minSurface) {
       filtered = filtered.filter(p => (p.surface || 0) >= Number(filters.minSurface))
     }
-    // Simuler un délai
+
+    // Pour simuler un petit délai réseau
     setTimeout(() => {
       setProperties(filtered)
       setLoading(false)
-    }, 300)
+    }, 200)
   }
+
+  // Met à jour les filtres et l'URL quand l'utilisateur utilise le panneau de filtres
+  const handleFilterChange = (newFilters: typeof filters) => {
+    setFilters(newFilters)
+    const params = new URLSearchParams()
+    if (newFilters.transaction) params.set('transaction', newFilters.transaction)
+    if (newFilters.type) params.set('type', newFilters.type)
+    if (newFilters.city) params.set('city', newFilters.city)
+    if (newFilters.minPrice) params.set('minPrice', String(newFilters.minPrice))
+    if (newFilters.maxPrice) params.set('maxPrice', String(newFilters.maxPrice))
+    if (newFilters.minSurface) params.set('minSurface', String(newFilters.minSurface))
+    setSearchParams(params, { replace: true })
+  }
+
+  const transactionLabel = filters.transaction === 'location' ? 'À louer' : filters.transaction === 'vente' ? 'À vendre' : 'Tous les biens'
+  const typeLabel = filters.type ? ` - ${filters.type.charAt(0).toUpperCase() + filters.type.slice(1)}s` : ''
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filtres */}
         <div className="w-full lg:w-64 shrink-0">
-          <PropertyFilters filters={filters} setFilters={setFilters} />
+          <PropertyFilters filters={filters} setFilters={handleFilterChange} />
         </div>
 
         {/* Résultats */}
         <div className="flex-1">
           <h1 className="text-3xl font-serif font-bold text-dark mb-2">
-            {filters.transaction === 'location' ? 'À louer' : filters.transaction === 'vente' ? 'À vendre' : 'Tous les biens'}
-            {filters.type && ` - ${filters.type.charAt(0).toUpperCase() + filters.type.slice(1)}s`}
+            {transactionLabel}{typeLabel}
           </h1>
           <p className="text-gray-600 mb-8">{properties.length} bien(s) trouvé(s)</p>
 

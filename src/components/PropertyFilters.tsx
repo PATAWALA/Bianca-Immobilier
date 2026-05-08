@@ -11,12 +11,12 @@ interface Filters {
 
 interface Props {
   filters: Filters
-  setFilters: React.Dispatch<React.SetStateAction<Filters>>
+  setFilters: (filters: Filters) => void
 }
 
 const PropertyFilters = ({ filters, setFilters }: Props) => {
   const handleChange = (field: keyof Filters, value: string) => {
-    setFilters(prev => ({ ...prev, [field]: value }))
+    setFilters({ ...filters, [field]: value })
   }
 
   const clearFilters = () => {
